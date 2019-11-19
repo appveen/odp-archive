@@ -35,29 +35,21 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/api', (req, res) => {
-    const path = req.query.path;
-    const params = req.query.params;
-    if (!path) {
-        res.status(400).json({ message: 'Invalid Request' });
-        return;
-    }
-    k8sController.query(path + '?' + params).then(data => {
-        res.status(200).json(data);
-    }).catch(err => {
-        logger.error(err);
-        res.status(500).json({ message: 'Something went wrong' });
-    });
-});
-
 app.post('/api/scale', (req, res) => {
     const release = req.body.release;
-    const scale = req.body.scale;
+    let scale = req.body.scale;
     if (!release || (scale != '0' && scale != '1')) {
         res.status(400).json({ message: 'Invalid Request' });
         return;
     }
-    k8sController.scale(release, scale).then(data => {
+    scale = parseInt(scale, 10)
+    let request;
+    if (scale === 1) {
+        request = k8sController.scaleUp(release);
+    } else {
+        request = k8sController.scaleDown(release);
+    }
+    request.then(data => {
         const message = release + ' scaled ' + (scale ? 'up' : 'down');
         res.status(200).json({ message: message });
     }).catch(err => {
