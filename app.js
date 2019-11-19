@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
     const path = req.query.path;
     const params = req.query.params;
-    if (!path || !params) {
+    if (!path) {
         res.status(400).json({ message: 'Invalid Request' });
         return;
     }
