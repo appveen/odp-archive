@@ -35,13 +35,14 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.get('/api/activepods', (req, res) => {
-    const release = req.query.release;
-    if (!release) {
+app.get('/api', (req, res) => {
+    const path = req.query.path;
+    const params = req.query.params;
+    if (!path || !params) {
         res.status(400).json({ message: 'Invalid Request' });
         return;
     }
-    k8sController.listDeployments(release).then(data => {
+    k8sController.query(path + '?' + params).then(data => {
         res.status(200).json(data);
     }).catch(err => {
         logger.error(err);
