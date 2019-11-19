@@ -35,6 +35,20 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/api/activepods', (req, res) => {
+    const release = req.query.release;
+    if (!release) {
+        res.status(400).json({ message: 'Invalid Request' });
+        return;
+    }
+    k8sController.listDeployments(release).then(data => {
+        res.status(200).json(data);
+    }).catch(err => {
+        logger.error(err);
+        res.status(500).json({ message: 'Something went wrong' });
+    });
+});
+
 app.post('/api/scale', (req, res) => {
     const release = req.body.release;
     const scale = req.body.scale;
