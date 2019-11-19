@@ -45,9 +45,9 @@ app.post('/api/scale', (req, res) => {
     scale = parseInt(scale, 10)
     let request;
     if (scale === 1) {
-        request = k8sController.scaleUp(release);
+        request = k8sController.scaleODP(release, scale);
     } else {
-        request = k8sController.scaleDown(release);
+        request = k8sController.scaleDownAll(release);
     }
     request.then(data => {
         const message = release + ' scaled ' + (scale ? 'up' : 'down');
